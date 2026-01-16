@@ -41,6 +41,45 @@ export type Database = {
         }
         Relationships: []
       }
+      societies: {
+        Row: {
+          address: string
+          city: string
+          created_at: string | null
+          id: string
+          name: string
+          pincode: string
+          secretary_id: string | null
+          state: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          address: string
+          city: string
+          created_at?: string | null
+          id?: string
+          name: string
+          pincode: string
+          secretary_id?: string | null
+          state: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string
+          city?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+          pincode?: string
+          secretary_id?: string | null
+          state?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
