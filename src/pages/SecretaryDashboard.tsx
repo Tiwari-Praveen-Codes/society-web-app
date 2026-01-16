@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   LayoutDashboard, 
@@ -13,6 +14,15 @@ import {
 import { DashboardCard } from '@/components/DashboardCard';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import RegisterSociety from './RegisterSociety';
+import PendingApproval from './PendingApproval';
+
+interface Society {
+  id: string;
+  name: string;
+  status: string;
+}
 
 const features = [
   { title: 'Overview', icon: LayoutDashboard, color: 'secretary' },
@@ -27,7 +37,50 @@ const features = [
 
 export default function SecretaryDashboard() {
   const { signOut, user } = useAuth();
+  const [society, setSociety] = useState<Society | null>(null);
+  const [loading, setLoading] = useState(true);
 
+  const fetchSociety = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('societies')
+      .select('id, name, status')
+      .eq('secretary_id', user.id)
+      .maybeSingle();
+
+    if (!error && data) {
+      setSociety(data);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchSociety();
+  }, [user]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // No society registered yet - show registration form
+  if (!society) {
+    return <RegisterSociety onRegistered={fetchSociety} />;
+  }
+
+  // Society pending verification - show waiting screen
+  if (society.status === 'pending_verification') {
+    return <PendingApproval society={society} />;
+  }
+
+  // Society approved - show dashboard
   return (
     <div className="min-h-screen p-6 md:p-8">
       <div className="max-w-6xl mx-auto">
@@ -39,7 +92,7 @@ export default function SecretaryDashboard() {
         >
           <div>
             <h1 className="text-3xl md:text-4xl font-bold">
-              <span className="text-secretary">Admin</span> Dashboard
+              <span className="text-secretary">{society.name}</span>
             </h1>
             <p className="text-muted-foreground mt-1">
               {user?.email}
