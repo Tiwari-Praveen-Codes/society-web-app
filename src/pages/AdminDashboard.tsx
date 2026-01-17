@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Building2, MapPin, Calendar, Eye, LogOut, ShieldCheck, Clock } from 'lucide-react';
+import { Building2, MapPin, Calendar, Eye, LogOut, ShieldCheck, Clock, User, Mail, CheckCircle, XCircle, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 
 interface Society {
@@ -20,10 +22,20 @@ interface Society {
   secretary_id: string | null;
 }
 
+interface SecretaryProfile {
+  full_name: string | null;
+  email: string | null;
+}
+
 export default function AdminDashboard() {
   const { user, signOut } = useAuth();
+  const { toast } = useToast();
   const [societies, setSocieties] = useState<Society[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSociety, setSelectedSociety] = useState<Society | null>(null);
+  const [secretaryProfile, setSecretaryProfile] = useState<SecretaryProfile | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     fetchPendingSocieties();
@@ -42,9 +54,61 @@ export default function AdminDashboard() {
     setLoading(false);
   };
 
-  const handleViewDetails = (societyId: string) => {
-    // TODO: Navigate to society details page
-    console.log('View details for:', societyId);
+  const fetchSecretaryProfile = async (secretaryId: string) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('full_name, email')
+      .eq('id', secretaryId)
+      .maybeSingle();
+
+    if (!error && data) {
+      setSecretaryProfile(data);
+    } else {
+      setSecretaryProfile(null);
+    }
+  };
+
+  const handleViewDetails = async (society: Society) => {
+    setSelectedSociety(society);
+    setModalOpen(true);
+    if (society.secretary_id) {
+      await fetchSecretaryProfile(society.secretary_id);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedSociety(null);
+    setSecretaryProfile(null);
+  };
+
+  const handleUpdateStatus = async (status: 'active' | 'rejected') => {
+    if (!selectedSociety) return;
+
+    setActionLoading(true);
+    const { error } = await supabase
+      .from('societies')
+      .update({ status })
+      .eq('id', selectedSociety.id);
+
+    setActionLoading(false);
+
+    if (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Action failed',
+        description: error.message,
+      });
+      return;
+    }
+
+    toast({
+      title: status === 'active' ? 'Society Approved' : 'Society Rejected',
+      description: `${selectedSociety.name} has been ${status === 'active' ? 'approved' : 'rejected'}.`,
+    });
+
+    handleCloseModal();
+    fetchPendingSocieties();
   };
 
   return (
@@ -147,7 +211,7 @@ export default function AdminDashboard() {
                         variant="outline"
                         size="sm"
                         className="w-full mt-2"
-                        onClick={() => handleViewDetails(society.id)}
+                        onClick={() => handleViewDetails(society)}
                       >
                         <Eye className="w-4 h-4 mr-2" />
                         View Details
@@ -160,6 +224,110 @@ export default function AdminDashboard() {
           )}
         </motion.div>
       </main>
+
+      {/* Society Details Modal */}
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Building2 className="w-5 h-5 text-primary" />
+              Society Details
+            </DialogTitle>
+          </DialogHeader>
+
+          {selectedSociety && (
+            <div className="space-y-5">
+              {/* Society Name */}
+              <div>
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Society Name
+                </label>
+                <p className="text-lg font-semibold mt-1">{selectedSociety.name}</p>
+              </div>
+
+              {/* Full Address */}
+              <div>
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Full Address
+                </label>
+                <div className="flex items-start gap-2 mt-1">
+                  <MapPin className="w-4 h-4 text-muted-foreground mt-1 shrink-0" />
+                  <p className="text-foreground">
+                    {selectedSociety.address}, {selectedSociety.city}, {selectedSociety.state} - {selectedSociety.pincode}
+                  </p>
+                </div>
+              </div>
+
+              {/* Created By */}
+              <div>
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Created By
+                </label>
+                <div className="mt-1 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-muted-foreground" />
+                    <span>{secretaryProfile?.full_name || 'Unknown'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-muted-foreground text-sm">
+                      {secretaryProfile?.email || 'No email'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Created On */}
+              <div>
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Created On
+                </label>
+                <div className="flex items-center gap-2 mt-1">
+                  <Calendar className="w-4 h-4 text-muted-foreground" />
+                  <span>
+                    {selectedSociety.created_at
+                      ? format(new Date(selectedSociety.created_at), 'MMMM dd, yyyy \'at\' hh:mm a')
+                      : 'N/A'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4 border-t border-border">
+                <Button
+                  onClick={() => handleUpdateStatus('active')}
+                  disabled={actionLoading}
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                >
+                  {actionLoading ? (
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Approve
+                    </>
+                  )}
+                </Button>
+                <Button
+                  onClick={() => handleUpdateStatus('rejected')}
+                  disabled={actionLoading}
+                  variant="destructive"
+                  className="flex-1"
+                >
+                  {actionLoading ? (
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      <XCircle className="w-4 h-4 mr-2" />
+                      Reject
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
