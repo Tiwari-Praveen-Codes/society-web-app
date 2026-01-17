@@ -63,6 +63,7 @@ export default {
         resident: "hsl(var(--resident))",
         watchman: "hsl(var(--watchman))",
         secretary: "hsl(var(--secretary))",
+        warning: "hsl(var(--warning))",
       },
       borderRadius: {
         lg: "var(--radius)",
