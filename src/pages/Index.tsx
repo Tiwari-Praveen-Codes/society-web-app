@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import ResidentDashboard from './ResidentDashboard';
 import WatchmanDashboard from './WatchmanDashboard';
 import SecretaryDashboard from './SecretaryDashboard';
+import AdminDashboard from './AdminDashboard';
 
 export default function Index() {
   const { user, role, loading } = useAuth();
@@ -41,6 +42,8 @@ export default function Index() {
       return <WatchmanDashboard />;
     case 'secretary':
       return <SecretaryDashboard />;
+    case 'admin':
+      return <AdminDashboard />;
     default:
       return null;
   }

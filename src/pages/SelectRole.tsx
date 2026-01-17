@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Home, Shield, Briefcase, ArrowRight, Check } from 'lucide-react';
+import { Home, Shield, Briefcase, ShieldCheck, ArrowRight, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 
-type AppRole = 'resident' | 'watchman' | 'secretary';
+type AppRole = 'resident' | 'watchman' | 'secretary' | 'admin';
 
 interface RoleOption {
   id: AppRole;
@@ -41,6 +41,14 @@ const roles: RoleOption[] = [
     icon: Briefcase,
     color: 'text-secretary',
     bgColor: 'bg-secretary/10 hover:bg-secretary/20',
+  },
+  {
+    id: 'admin',
+    title: 'Admin',
+    description: 'Verify societies, manage platform settings, and oversee all operations.',
+    icon: ShieldCheck,
+    color: 'text-primary',
+    bgColor: 'bg-primary/10 hover:bg-primary/20',
   },
 ];
 

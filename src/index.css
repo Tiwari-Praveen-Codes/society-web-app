@@ -56,6 +56,9 @@
     --resident: 173 80% 40%;
     --watchman: 45 93% 47%;
     --secretary: 280 65% 60%;
+    
+    /* Status colors */
+    --warning: 45 93% 47%;
   }
 
   .dark {
