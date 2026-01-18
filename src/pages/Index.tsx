@@ -1,14 +1,18 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useSociety } from '@/hooks/useSociety';
 import ResidentDashboard from './ResidentDashboard';
 import WatchmanDashboard from './WatchmanDashboard';
 import SecretaryDashboard from './SecretaryDashboard';
 import AdminDashboard from './AdminDashboard';
 
 export default function Index() {
-  const { user, role, loading } = useAuth();
+  const { user, role, loading: authLoading } = useAuth();
+  const { societies, selectedSociety, loading: societyLoading } = useSociety();
   const navigate = useNavigate();
+
+  const loading = authLoading || societyLoading;
 
   useEffect(() => {
     if (!loading) {
@@ -16,9 +20,11 @@ export default function Index() {
         navigate('/auth');
       } else if (!role) {
         navigate('/select-role');
+      } else if (role === 'resident' && societies.length > 0 && !selectedSociety) {
+        navigate('/select-society');
       }
     }
-  }, [user, role, loading, navigate]);
+  }, [user, role, loading, societies, selectedSociety, navigate]);
 
   if (loading) {
     return (
