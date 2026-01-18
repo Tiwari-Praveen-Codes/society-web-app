@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      notices: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          description: string
+          id: string
+          link: string | null
+          society_id: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          description: string
+          id?: string
+          link?: string | null
+          society_id: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          description?: string
+          id?: string
+          link?: string | null
+          society_id?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notices_society_id_fkey"
+            columns: ["society_id"]
+            isOneToOne: false
+            referencedRelation: "societies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
