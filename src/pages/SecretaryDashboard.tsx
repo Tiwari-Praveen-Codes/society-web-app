@@ -17,6 +17,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import RegisterSociety from './RegisterSociety';
 import PendingApproval from './PendingApproval';
+import Noticeboard from '@/components/Noticeboard';
 
 interface Society {
   id: string;
@@ -24,21 +25,13 @@ interface Society {
   status: string;
 }
 
-const features = [
-  { title: 'Overview', icon: LayoutDashboard, color: 'secretary' },
-  { title: 'Manage Residents', icon: Users, color: 'secretary' },
-  { title: 'Billing & Invoices', icon: Receipt, color: 'secretary' },
-  { title: 'Financial Reports', icon: BarChart3, color: 'secretary' },
-  { title: 'Documents', icon: FileText, color: 'secretary' },
-  { title: 'Events Calendar', icon: Calendar, color: 'secretary' },
-  { title: 'Announcements', icon: Bell, color: 'secretary' },
-  { title: 'Settings', icon: Settings, color: 'secretary' },
-];
+type ActiveView = 'dashboard' | 'noticeboard';
 
 export default function SecretaryDashboard() {
   const { signOut, user } = useAuth();
   const [society, setSociety] = useState<Society | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeView, setActiveView] = useState<ActiveView>('dashboard');
 
   const fetchSociety = async () => {
     if (!user) return;
@@ -79,6 +72,28 @@ export default function SecretaryDashboard() {
   if (society.status === 'pending_verification') {
     return <PendingApproval society={society} />;
   }
+
+  // Show noticeboard view
+  if (activeView === 'noticeboard') {
+    return (
+      <Noticeboard 
+        societyId={society.id} 
+        isSecretary={true}
+        onBack={() => setActiveView('dashboard')}
+      />
+    );
+  }
+
+  const features = [
+    { title: 'Overview', icon: LayoutDashboard, color: 'secretary', onClick: undefined },
+    { title: 'Manage Residents', icon: Users, color: 'secretary', onClick: undefined },
+    { title: 'Billing & Invoices', icon: Receipt, color: 'secretary', onClick: undefined },
+    { title: 'Financial Reports', icon: BarChart3, color: 'secretary', onClick: undefined },
+    { title: 'Documents', icon: FileText, color: 'secretary', onClick: undefined },
+    { title: 'Events Calendar', icon: Calendar, color: 'secretary', onClick: undefined },
+    { title: 'Noticeboard', icon: Bell, color: 'secretary', onClick: () => setActiveView('noticeboard') },
+    { title: 'Settings', icon: Settings, color: 'secretary', onClick: undefined },
+  ];
 
   // Society approved - show dashboard
   return (
@@ -128,6 +143,7 @@ export default function SecretaryDashboard() {
               icon={feature.icon}
               color={feature.color}
               index={index}
+              onClick={feature.onClick}
             />
           ))}
         </div>

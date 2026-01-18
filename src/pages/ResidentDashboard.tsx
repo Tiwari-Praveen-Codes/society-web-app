@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -14,18 +14,15 @@ import { DashboardCard } from '@/components/DashboardCard';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useSociety } from '@/hooks/useSociety';
+import Noticeboard from '@/components/Noticeboard';
 
-const features = [
-  { title: 'Noticeboard', icon: Bell, color: 'primary', description: 'View society announcements' },
-  { title: 'Complaints', icon: MessageSquare, color: 'primary', description: 'Submit and track complaints' },
-  { title: 'Bills', icon: CreditCard, color: 'primary', description: 'View and pay your bills' },
-  { title: 'Facilities', icon: Building, color: 'primary', description: 'Book society amenities' },
-];
+type ActiveView = 'dashboard' | 'noticeboard';
 
 export default function ResidentDashboard() {
   const { signOut, user } = useAuth();
   const { societies, selectedSociety, loading, clearSociety } = useSociety();
   const navigate = useNavigate();
+  const [activeView, setActiveView] = useState<ActiveView>('dashboard');
 
   useEffect(() => {
     // If user has societies but none selected, redirect to selection
@@ -75,6 +72,24 @@ export default function ResidentDashboard() {
       </div>
     );
   }
+
+  // Show noticeboard view
+  if (activeView === 'noticeboard' && selectedSociety) {
+    return (
+      <Noticeboard 
+        societyId={selectedSociety.id} 
+        isSecretary={false}
+        onBack={() => setActiveView('dashboard')}
+      />
+    );
+  }
+
+  const features = [
+    { title: 'Noticeboard', icon: Bell, color: 'primary', description: 'View society announcements', onClick: () => setActiveView('noticeboard') },
+    { title: 'Complaints', icon: MessageSquare, color: 'primary', description: 'Submit and track complaints', onClick: undefined },
+    { title: 'Bills', icon: CreditCard, color: 'primary', description: 'View and pay your bills', onClick: undefined },
+    { title: 'Facilities', icon: Building, color: 'primary', description: 'Book society amenities', onClick: undefined },
+  ];
 
   return (
     <div className="min-h-screen p-6 md:p-8">
@@ -151,6 +166,7 @@ export default function ResidentDashboard() {
               icon={feature.icon}
               color={feature.color}
               index={index}
+              onClick={feature.onClick}
             />
           ))}
         </div>
