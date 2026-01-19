@@ -23,11 +23,16 @@ interface SocietyContextType {
 
 const SocietyContext = createContext<SocietyContextType | undefined>(undefined);
 
-export function SocietyProvider({ children }: { children: ReactNode }) {
+interface SocietyProviderProps {
+  children: ReactNode;
+  initialSociety?: Society;
+}
+
+export function SocietyProvider({ children, initialSociety }: SocietyProviderProps) {
   const { user } = useAuth();
-  const [societies, setSocieties] = useState<Society[]>([]);
-  const [selectedSociety, setSelectedSociety] = useState<Society | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [societies, setSocieties] = useState<Society[]>(initialSociety ? [initialSociety] : []);
+  const [selectedSociety, setSelectedSociety] = useState<Society | null>(initialSociety || null);
+  const [loading, setLoading] = useState(!initialSociety);
 
   const fetchUserSocieties = async () => {
     if (!user) {

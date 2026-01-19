@@ -7,19 +7,20 @@ import {
   ClipboardList, 
   Users,
   Phone,
-  Shield,
   LogOut,
   Bell,
   Building2,
-  ChevronDown
+  ChevronDown,
+  MessageSquare
 } from 'lucide-react';
 import { DashboardCard } from '@/components/DashboardCard';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useSociety } from '@/hooks/useSociety';
 import Noticeboard from '@/components/Noticeboard';
+import { Complaints } from '@/components/Complaints';
 
-type ActiveView = 'dashboard' | 'noticeboard';
+type ActiveView = 'dashboard' | 'noticeboard' | 'complaints';
 
 export default function WatchmanDashboard() {
   const { signOut, user } = useAuth();
@@ -86,6 +87,20 @@ export default function WatchmanDashboard() {
     );
   }
 
+  // Show complaints view
+  if (activeView === 'complaints' && selectedSociety) {
+    return (
+      <div className="min-h-screen p-6 md:p-8">
+        <div className="max-w-4xl mx-auto">
+          <Button variant="ghost" onClick={() => setActiveView('dashboard')} className="mb-4">
+            ← Back to Dashboard
+          </Button>
+          <Complaints isSecretary={false} />
+        </div>
+      </div>
+    );
+  }
+
   const features = [
     { title: 'Visitor Entry', icon: UserCheck, color: 'watchman', onClick: undefined },
     { title: 'Security Alerts', icon: AlertTriangle, color: 'watchman', onClick: undefined },
@@ -93,6 +108,7 @@ export default function WatchmanDashboard() {
     { title: 'Residents Directory', icon: Users, color: 'watchman', onClick: undefined },
     { title: 'Emergency Contacts', icon: Phone, color: 'watchman', onClick: undefined },
     { title: 'Noticeboard', icon: Bell, color: 'watchman', onClick: () => setActiveView('noticeboard') },
+    { title: 'Complaints', icon: MessageSquare, color: 'watchman', onClick: () => setActiveView('complaints') },
   ];
 
   return (

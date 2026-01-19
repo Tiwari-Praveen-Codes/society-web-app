@@ -9,7 +9,8 @@ import {
   BarChart3,
   Calendar,
   Bell,
-  LogOut
+  LogOut,
+  MessageSquare
 } from 'lucide-react';
 import { DashboardCard } from '@/components/DashboardCard';
 import { Button } from '@/components/ui/button';
@@ -18,14 +19,20 @@ import { supabase } from '@/integrations/supabase/client';
 import RegisterSociety from './RegisterSociety';
 import PendingApproval from './PendingApproval';
 import Noticeboard from '@/components/Noticeboard';
+import { Complaints } from '@/components/Complaints';
+import { SocietyProvider } from '@/hooks/useSociety';
 
 interface Society {
   id: string;
   name: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
   status: string;
 }
 
-type ActiveView = 'dashboard' | 'noticeboard';
+type ActiveView = 'dashboard' | 'noticeboard' | 'complaints';
 
 export default function SecretaryDashboard() {
   const { signOut, user } = useAuth();
@@ -38,7 +45,7 @@ export default function SecretaryDashboard() {
     
     const { data, error } = await supabase
       .from('societies')
-      .select('id, name, status')
+      .select('id, name, address, city, state, pincode, status')
       .eq('secretary_id', user.id)
       .maybeSingle();
 
@@ -84,6 +91,22 @@ export default function SecretaryDashboard() {
     );
   }
 
+  // Show complaints view
+  if (activeView === 'complaints') {
+    return (
+      <SocietyProvider initialSociety={society}>
+        <div className="min-h-screen p-6 md:p-8">
+          <div className="max-w-4xl mx-auto">
+            <Button variant="ghost" onClick={() => setActiveView('dashboard')} className="mb-4">
+              ← Back to Dashboard
+            </Button>
+            <Complaints isSecretary={true} />
+          </div>
+        </div>
+      </SocietyProvider>
+    );
+  }
+
   const features = [
     { title: 'Overview', icon: LayoutDashboard, color: 'secretary', onClick: undefined },
     { title: 'Manage Residents', icon: Users, color: 'secretary', onClick: undefined },
@@ -92,6 +115,7 @@ export default function SecretaryDashboard() {
     { title: 'Documents', icon: FileText, color: 'secretary', onClick: undefined },
     { title: 'Events Calendar', icon: Calendar, color: 'secretary', onClick: undefined },
     { title: 'Noticeboard', icon: Bell, color: 'secretary', onClick: () => setActiveView('noticeboard') },
+    { title: 'Complaints', icon: MessageSquare, color: 'secretary', onClick: () => setActiveView('complaints') },
     { title: 'Settings', icon: Settings, color: 'secretary', onClick: undefined },
   ];
 
