@@ -16,8 +16,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { useSociety } from '@/hooks/useSociety';
 import Noticeboard from '@/components/Noticeboard';
 import { Complaints } from '@/components/Complaints';
+import { Bills } from '@/components/Bills';
 
-type ActiveView = 'dashboard' | 'noticeboard' | 'complaints';
+type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'bills';
 
 export default function ResidentDashboard() {
   const { signOut, user } = useAuth();
@@ -99,10 +100,24 @@ export default function ResidentDashboard() {
     );
   }
 
+  // Show bills view
+  if (activeView === 'bills' && selectedSociety) {
+    return (
+      <div className="min-h-screen p-6 md:p-8">
+        <div className="max-w-4xl mx-auto">
+          <Button variant="ghost" onClick={() => setActiveView('dashboard')} className="mb-4">
+            ← Back to Dashboard
+          </Button>
+          <Bills isSecretary={false} />
+        </div>
+      </div>
+    );
+  }
+
   const features = [
     { title: 'Noticeboard', icon: Bell, color: 'primary', description: 'View society announcements', onClick: () => setActiveView('noticeboard') },
     { title: 'Complaints', icon: MessageSquare, color: 'primary', description: 'Submit and track complaints', onClick: () => setActiveView('complaints') },
-    { title: 'Bills', icon: CreditCard, color: 'primary', description: 'View and pay your bills', onClick: undefined },
+    { title: 'Bills', icon: CreditCard, color: 'primary', description: 'View and pay your bills', onClick: () => setActiveView('bills') },
     { title: 'Facilities', icon: Building, color: 'primary', description: 'Book society amenities', onClick: undefined },
   ];
 
