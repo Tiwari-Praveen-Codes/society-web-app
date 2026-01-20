@@ -294,6 +294,7 @@ export type Database = {
       }
       society_members: {
         Row: {
+          availability_status: string
           created_at: string | null
           id: string
           role: string
@@ -303,6 +304,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          availability_status?: string
           created_at?: string | null
           id?: string
           role?: string
@@ -312,6 +314,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          availability_status?: string
           created_at?: string | null
           id?: string
           role?: string
