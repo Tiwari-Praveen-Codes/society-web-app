@@ -19,8 +19,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { useSociety } from '@/hooks/useSociety';
 import Noticeboard from '@/components/Noticeboard';
 import { Complaints } from '@/components/Complaints';
+import { ResidentDirectory } from '@/components/ResidentDirectory';
 
-type ActiveView = 'dashboard' | 'noticeboard' | 'complaints';
+type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'residents';
 
 export default function WatchmanDashboard() {
   const { signOut, user } = useAuth();
@@ -101,11 +102,25 @@ export default function WatchmanDashboard() {
     );
   }
 
+  // Show residents directory view
+  if (activeView === 'residents' && selectedSociety) {
+    return (
+      <div className="min-h-screen p-6 md:p-8">
+        <div className="max-w-4xl mx-auto">
+          <Button variant="ghost" onClick={() => setActiveView('dashboard')} className="mb-4">
+            ← Back to Dashboard
+          </Button>
+          <ResidentDirectory societyId={selectedSociety.id} />
+        </div>
+      </div>
+    );
+  }
+
   const features = [
     { title: 'Visitor Entry', icon: UserCheck, color: 'watchman', onClick: undefined },
     { title: 'Security Alerts', icon: AlertTriangle, color: 'watchman', onClick: undefined },
     { title: 'Gate Log', icon: ClipboardList, color: 'watchman', onClick: undefined },
-    { title: 'Residents Directory', icon: Users, color: 'watchman', onClick: undefined },
+    { title: 'Residents Directory', icon: Users, color: 'watchman', onClick: () => setActiveView('residents') },
     { title: 'Emergency Contacts', icon: Phone, color: 'watchman', onClick: undefined },
     { title: 'Noticeboard', icon: Bell, color: 'watchman', onClick: () => setActiveView('noticeboard') },
     { title: 'Complaints', icon: MessageSquare, color: 'watchman', onClick: () => setActiveView('complaints') },

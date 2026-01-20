@@ -18,6 +18,7 @@ import Noticeboard from '@/components/Noticeboard';
 import { Complaints } from '@/components/Complaints';
 import { Bills } from '@/components/Bills';
 import { Facilities } from '@/components/Facilities';
+import { AvailabilityStatus } from '@/components/AvailabilityStatus';
 
 type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'bills' | 'facilities';
 
@@ -201,6 +202,18 @@ export default function ResidentDashboard() {
           <div className="w-2 h-2 rounded-full bg-resident animate-pulse" />
           <span className="text-sm font-medium text-resident">Resident</span>
         </motion.div>
+
+        {/* Availability Status */}
+        {selectedSociety && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mb-8"
+          >
+            <AvailabilityStatus societyId={selectedSociety.id} />
+          </motion.div>
+        )}
 
         {/* Feature Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
