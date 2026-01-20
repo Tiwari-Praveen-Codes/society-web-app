@@ -102,6 +102,89 @@ export type Database = {
           },
         ]
       }
+      facilities: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          society_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          society_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          society_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facilities_society_id_fkey"
+            columns: ["society_id"]
+            isOneToOne: false
+            referencedRelation: "societies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      facility_bookings: {
+        Row: {
+          booking_date: string
+          created_at: string | null
+          end_time: string
+          facility_id: string
+          id: string
+          society_id: string
+          start_time: string
+          user_id: string
+        }
+        Insert: {
+          booking_date: string
+          created_at?: string | null
+          end_time: string
+          facility_id: string
+          id?: string
+          society_id: string
+          start_time: string
+          user_id: string
+        }
+        Update: {
+          booking_date?: string
+          created_at?: string | null
+          end_time?: string
+          facility_id?: string
+          id?: string
+          society_id?: string
+          start_time?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_bookings_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facility_bookings_society_id_fkey"
+            columns: ["society_id"]
+            isOneToOne: false
+            referencedRelation: "societies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notices: {
         Row: {
           created_at: string | null
