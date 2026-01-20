@@ -33,8 +33,9 @@ interface Society {
 }
 
 import { Bills } from '@/components/Bills';
+import { Facilities } from '@/components/Facilities';
 
-type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'bills';
+type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'bills' | 'facilities';
 
 export default function SecretaryDashboard() {
   const { signOut, user } = useAuth();
@@ -125,13 +126,29 @@ export default function SecretaryDashboard() {
     );
   }
 
+  // Show facilities view
+  if (activeView === 'facilities') {
+    return (
+      <SocietyProvider initialSociety={society}>
+        <div className="min-h-screen p-6 md:p-8">
+          <div className="max-w-4xl mx-auto">
+            <Button variant="ghost" onClick={() => setActiveView('dashboard')} className="mb-4">
+              ← Back to Dashboard
+            </Button>
+            <Facilities isSecretary={true} societyId={society.id} />
+          </div>
+        </div>
+      </SocietyProvider>
+    );
+  }
+
   const features = [
     { title: 'Overview', icon: LayoutDashboard, color: 'secretary', onClick: undefined },
     { title: 'Manage Residents', icon: Users, color: 'secretary', onClick: undefined },
     { title: 'Billing & Invoices', icon: Receipt, color: 'secretary', onClick: () => setActiveView('bills') },
+    { title: 'Facilities', icon: Calendar, color: 'secretary', onClick: () => setActiveView('facilities') },
     { title: 'Financial Reports', icon: BarChart3, color: 'secretary', onClick: undefined },
     { title: 'Documents', icon: FileText, color: 'secretary', onClick: undefined },
-    { title: 'Events Calendar', icon: Calendar, color: 'secretary', onClick: undefined },
     { title: 'Noticeboard', icon: Bell, color: 'secretary', onClick: () => setActiveView('noticeboard') },
     { title: 'Complaints', icon: MessageSquare, color: 'secretary', onClick: () => setActiveView('complaints') },
     { title: 'Settings', icon: Settings, color: 'secretary', onClick: undefined },
