@@ -10,7 +10,8 @@ import {
   Calendar,
   Bell,
   LogOut,
-  MessageSquare
+  MessageSquare,
+  Phone
 } from 'lucide-react';
 import { DashboardCard } from '@/components/DashboardCard';
 import { Button } from '@/components/ui/button';
@@ -34,8 +35,9 @@ interface Society {
 
 import { Bills } from '@/components/Bills';
 import { Facilities } from '@/components/Facilities';
+import { EmergencyContacts } from '@/components/EmergencyContacts';
 
-type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'bills' | 'facilities';
+type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'bills' | 'facilities' | 'emergency';
 
 export default function SecretaryDashboard() {
   const { signOut, user } = useAuth();
@@ -142,6 +144,22 @@ export default function SecretaryDashboard() {
     );
   }
 
+  // Show emergency contacts view
+  if (activeView === 'emergency') {
+    return (
+      <SocietyProvider initialSociety={society}>
+        <div className="min-h-screen p-6 md:p-8">
+          <div className="max-w-4xl mx-auto">
+            <Button variant="ghost" onClick={() => setActiveView('dashboard')} className="mb-4">
+              ← Back to Dashboard
+            </Button>
+            <EmergencyContacts societyId={society.id} isSecretary={true} />
+          </div>
+        </div>
+      </SocietyProvider>
+    );
+  }
+
   const features = [
     { title: 'Overview', icon: LayoutDashboard, color: 'secretary', onClick: undefined },
     { title: 'Manage Residents', icon: Users, color: 'secretary', onClick: undefined },
@@ -151,6 +169,7 @@ export default function SecretaryDashboard() {
     { title: 'Documents', icon: FileText, color: 'secretary', onClick: undefined },
     { title: 'Noticeboard', icon: Bell, color: 'secretary', onClick: () => setActiveView('noticeboard') },
     { title: 'Complaints', icon: MessageSquare, color: 'secretary', onClick: () => setActiveView('complaints') },
+    { title: 'Emergency Contacts', icon: Phone, color: 'secretary', onClick: () => setActiveView('emergency') },
     { title: 'Settings', icon: Settings, color: 'secretary', onClick: undefined },
   ];
 
