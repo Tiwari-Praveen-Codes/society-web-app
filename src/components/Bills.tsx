@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Receipt, CreditCard, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
+import { PaymentDialog } from '@/components/PaymentDialog';
 
 interface Bill {
   id: string;
@@ -52,6 +53,7 @@ export function Bills({ isSecretary = false, societyId }: BillsProps) {
   const [dueDate, setDueDate] = useState('');
   const [selectedMember, setSelectedMember] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [paymentBill, setPaymentBill] = useState<Bill | null>(null);
 
   const activeSocietyId = societyId || selectedSociety?.id;
 
@@ -313,7 +315,7 @@ export function Bills({ isSecretary = false, societyId }: BillsProps) {
                     )}
                   </div>
                   {!isSecretary && bill.status === 'unpaid' && (
-                    <Button onClick={() => handleMarkAsPaid(bill.id)}>
+                    <Button onClick={() => setPaymentBill(bill)}>
                       <CreditCard className="h-4 w-4 mr-2" />
                       Pay Now
                     </Button>
@@ -323,6 +325,20 @@ export function Bills({ isSecretary = false, societyId }: BillsProps) {
             </Card>
           ))}
         </div>
+      )}
+
+      {/* Payment Dialog */}
+      {paymentBill && (
+        <PaymentDialog
+          open={!!paymentBill}
+          onOpenChange={(open) => !open && setPaymentBill(null)}
+          amount={Number(paymentBill.amount)}
+          title={paymentBill.title}
+          onPaymentSuccess={() => {
+            handleMarkAsPaid(paymentBill.id);
+            setPaymentBill(null);
+          }}
+        />
       )}
     </div>
   );

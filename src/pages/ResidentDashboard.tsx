@@ -25,6 +25,7 @@ import { AvailabilityStatus } from '@/components/AvailabilityStatus';
 import { VisitorEntry } from '@/components/VisitorEntry';
 import { EmergencyContacts } from '@/components/EmergencyContacts';
 import { Documents } from '@/components/Documents';
+import { NotificationBell } from '@/components/NotificationBell';
 
 type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'bills' | 'facilities' | 'visitors' | 'emergency' | 'documents';
 
@@ -205,14 +206,17 @@ export default function ResidentDashboard() {
               {user?.email}
             </p>
           </div>
-          <Button
-            variant="outline"
-            onClick={signOut}
-            className="flex items-center gap-2 self-start"
-          >
-            <LogOut className="w-4 h-4" />
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-2 self-start">
+            <NotificationBell />
+            <Button
+              variant="outline"
+              onClick={signOut}
+              className="flex items-center gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </Button>
+          </div>
         </motion.div>
 
         {/* Society Selector */}

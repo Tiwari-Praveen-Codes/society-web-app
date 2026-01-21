@@ -276,6 +276,65 @@ export type Database = {
           },
         ]
       }
+      gate_logs: {
+        Row: {
+          created_at: string
+          entry_time: string
+          exit_time: string | null
+          flat_number: string
+          id: string
+          logged_by: string
+          purpose: string
+          security_notes: string | null
+          society_id: string
+          updated_at: string
+          vehicle_number: string | null
+          vehicle_type: string | null
+          visitor_id: string | null
+          visitor_name: string
+        }
+        Insert: {
+          created_at?: string
+          entry_time?: string
+          exit_time?: string | null
+          flat_number: string
+          id?: string
+          logged_by: string
+          purpose: string
+          security_notes?: string | null
+          society_id: string
+          updated_at?: string
+          vehicle_number?: string | null
+          vehicle_type?: string | null
+          visitor_id?: string | null
+          visitor_name: string
+        }
+        Update: {
+          created_at?: string
+          entry_time?: string
+          exit_time?: string | null
+          flat_number?: string
+          id?: string
+          logged_by?: string
+          purpose?: string
+          security_notes?: string | null
+          society_id?: string
+          updated_at?: string
+          vehicle_number?: string | null
+          vehicle_type?: string | null
+          visitor_id?: string | null
+          visitor_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gate_logs_visitor_id_fkey"
+            columns: ["visitor_id"]
+            isOneToOne: false
+            referencedRelation: "visitors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notices: {
         Row: {
           created_at: string | null
@@ -316,6 +375,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          reference_id: string | null
+          society_id: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          reference_id?: string | null
+          society_id: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          reference_id?: string | null
+          society_id?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
