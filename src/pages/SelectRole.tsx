@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Home, Shield, Briefcase, ArrowRight, Check } from 'lucide-react';
@@ -47,9 +47,42 @@ const roles: RoleOption[] = [
 export default function SelectRole() {
   const [selectedRole, setSelectedRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(false);
-  const { setUserRole } = useAuth();
+  const { user, role, loading: authLoading, setUserRole } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Redirect if user already has a role
+  useEffect(() => {
+    if (!authLoading) {
+      if (!user) {
+        navigate('/auth');
+        return;
+      }
+      
+      if (role) {
+        // User already has a role - redirect to dashboard
+        // Admin role gets special handling in Index.tsx
+        navigate('/');
+      }
+    }
+  }, [user, role, authLoading, navigate]);
+
+  // Show loading while checking auth state
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+          <p className="text-muted-foreground">Checking your account...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if user has role (will redirect)
+  if (role) {
+    return null;
+  }
 
   const handleContinue = async () => {
     if (!selectedRole) return;
