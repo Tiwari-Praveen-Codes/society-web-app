@@ -11,7 +11,8 @@ import {
   Bell,
   LogOut,
   MessageSquare,
-  Phone
+  Phone,
+  ClipboardList
 } from 'lucide-react';
 import { DashboardCard } from '@/components/DashboardCard';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,7 @@ import PendingApproval from './PendingApproval';
 import Noticeboard from '@/components/Noticeboard';
 import { Complaints } from '@/components/Complaints';
 import { SocietyProvider } from '@/hooks/useSociety';
+import { NotificationBell } from '@/components/NotificationBell';
 
 interface Society {
   id: string;
@@ -37,8 +39,9 @@ import { Bills } from '@/components/Bills';
 import { Facilities } from '@/components/Facilities';
 import { EmergencyContacts } from '@/components/EmergencyContacts';
 import { Documents } from '@/components/Documents';
+import { GateLog } from '@/components/GateLog';
 
-type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'bills' | 'facilities' | 'emergency' | 'documents';
+type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'bills' | 'facilities' | 'emergency' | 'documents' | 'gatelog';
 
 export default function SecretaryDashboard() {
   const { signOut, user } = useAuth();
@@ -177,12 +180,28 @@ export default function SecretaryDashboard() {
     );
   }
 
+  // Show gate log view
+  if (activeView === 'gatelog') {
+    return (
+      <SocietyProvider initialSociety={society}>
+        <div className="min-h-screen p-6 md:p-8">
+          <div className="max-w-4xl mx-auto">
+            <Button variant="ghost" onClick={() => setActiveView('dashboard')} className="mb-4">
+              ← Back to Dashboard
+            </Button>
+            <GateLog isSecretary={true} />
+          </div>
+        </div>
+      </SocietyProvider>
+    );
+  }
+
   const features = [
     { title: 'Overview', icon: LayoutDashboard, color: 'secretary', onClick: undefined },
     { title: 'Manage Residents', icon: Users, color: 'secretary', onClick: undefined },
     { title: 'Billing & Invoices', icon: Receipt, color: 'secretary', onClick: () => setActiveView('bills') },
     { title: 'Facilities', icon: Calendar, color: 'secretary', onClick: () => setActiveView('facilities') },
-    { title: 'Financial Reports', icon: BarChart3, color: 'secretary', onClick: undefined },
+    { title: 'Gate Log', icon: ClipboardList, color: 'secretary', onClick: () => setActiveView('gatelog') },
     { title: 'Documents', icon: FileText, color: 'secretary', onClick: () => setActiveView('documents') },
     { title: 'Noticeboard', icon: Bell, color: 'secretary', onClick: () => setActiveView('noticeboard') },
     { title: 'Complaints', icon: MessageSquare, color: 'secretary', onClick: () => setActiveView('complaints') },
@@ -208,14 +227,17 @@ export default function SecretaryDashboard() {
               {user?.email}
             </p>
           </div>
-          <Button
-            variant="outline"
-            onClick={signOut}
-            className="flex items-center gap-2 self-start"
-          >
-            <LogOut className="w-4 h-4" />
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-2 self-start">
+            <NotificationBell />
+            <Button
+              variant="outline"
+              onClick={signOut}
+              className="flex items-center gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </Button>
+          </div>
         </motion.div>
 
         {/* Role Badge */}
