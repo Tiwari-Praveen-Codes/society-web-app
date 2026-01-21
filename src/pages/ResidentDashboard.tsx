@@ -10,7 +10,8 @@ import {
   Building2,
   ChevronDown,
   Users,
-  Phone
+  Phone,
+  FileText
 } from 'lucide-react';
 import { DashboardCard } from '@/components/DashboardCard';
 import { Button } from '@/components/ui/button';
@@ -23,8 +24,9 @@ import { Facilities } from '@/components/Facilities';
 import { AvailabilityStatus } from '@/components/AvailabilityStatus';
 import { VisitorEntry } from '@/components/VisitorEntry';
 import { EmergencyContacts } from '@/components/EmergencyContacts';
+import { Documents } from '@/components/Documents';
 
-type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'bills' | 'facilities' | 'visitors' | 'emergency';
+type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'bills' | 'facilities' | 'visitors' | 'emergency' | 'documents';
 
 export default function ResidentDashboard() {
   const { signOut, user } = useAuth();
@@ -162,12 +164,27 @@ export default function ResidentDashboard() {
     );
   }
 
+  // Show documents view
+  if (activeView === 'documents' && selectedSociety) {
+    return (
+      <div className="min-h-screen p-6 md:p-8">
+        <div className="max-w-4xl mx-auto">
+          <Button variant="ghost" onClick={() => setActiveView('dashboard')} className="mb-4">
+            ← Back to Dashboard
+          </Button>
+          <Documents societyId={selectedSociety.id} isSecretary={false} />
+        </div>
+      </div>
+    );
+  }
+
   const features = [
     { title: 'Noticeboard', icon: Bell, color: 'primary', description: 'View society announcements', onClick: () => setActiveView('noticeboard') },
     { title: 'Visitors', icon: Users, color: 'primary', description: 'Approve or reject visitors', onClick: () => setActiveView('visitors') },
     { title: 'Complaints', icon: MessageSquare, color: 'primary', description: 'Submit and track complaints', onClick: () => setActiveView('complaints') },
     { title: 'Bills', icon: CreditCard, color: 'primary', description: 'View and pay your bills', onClick: () => setActiveView('bills') },
     { title: 'Facilities', icon: Building, color: 'primary', description: 'Book society amenities', onClick: () => setActiveView('facilities') },
+    { title: 'Documents', icon: FileText, color: 'primary', description: 'View society documents', onClick: () => setActiveView('documents') },
     { title: 'Emergency', icon: Phone, color: 'primary', description: 'View emergency contacts', onClick: () => setActiveView('emergency') },
   ];
 
