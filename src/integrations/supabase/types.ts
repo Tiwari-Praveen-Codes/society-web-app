@@ -354,6 +354,53 @@ export type Database = {
         }
         Relationships: []
       }
+      visitors: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          flat_number: string
+          id: string
+          purpose: string
+          resident_id: string | null
+          society_id: string
+          status: string
+          updated_at: string | null
+          visitor_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          flat_number: string
+          id?: string
+          purpose: string
+          resident_id?: string | null
+          society_id: string
+          status?: string
+          updated_at?: string | null
+          visitor_name: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          flat_number?: string
+          id?: string
+          purpose?: string
+          resident_id?: string | null
+          society_id?: string
+          status?: string
+          updated_at?: string | null
+          visitor_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visitors_society_id_fkey"
+            columns: ["society_id"]
+            isOneToOne: false
+            referencedRelation: "societies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
