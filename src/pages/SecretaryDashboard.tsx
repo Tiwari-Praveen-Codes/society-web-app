@@ -36,8 +36,9 @@ interface Society {
 import { Bills } from '@/components/Bills';
 import { Facilities } from '@/components/Facilities';
 import { EmergencyContacts } from '@/components/EmergencyContacts';
+import { Documents } from '@/components/Documents';
 
-type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'bills' | 'facilities' | 'emergency';
+type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'bills' | 'facilities' | 'emergency' | 'documents';
 
 export default function SecretaryDashboard() {
   const { signOut, user } = useAuth();
@@ -160,13 +161,29 @@ export default function SecretaryDashboard() {
     );
   }
 
+  // Show documents view
+  if (activeView === 'documents') {
+    return (
+      <SocietyProvider initialSociety={society}>
+        <div className="min-h-screen p-6 md:p-8">
+          <div className="max-w-4xl mx-auto">
+            <Button variant="ghost" onClick={() => setActiveView('dashboard')} className="mb-4">
+              ← Back to Dashboard
+            </Button>
+            <Documents societyId={society.id} isSecretary={true} />
+          </div>
+        </div>
+      </SocietyProvider>
+    );
+  }
+
   const features = [
     { title: 'Overview', icon: LayoutDashboard, color: 'secretary', onClick: undefined },
     { title: 'Manage Residents', icon: Users, color: 'secretary', onClick: undefined },
     { title: 'Billing & Invoices', icon: Receipt, color: 'secretary', onClick: () => setActiveView('bills') },
     { title: 'Facilities', icon: Calendar, color: 'secretary', onClick: () => setActiveView('facilities') },
     { title: 'Financial Reports', icon: BarChart3, color: 'secretary', onClick: undefined },
-    { title: 'Documents', icon: FileText, color: 'secretary', onClick: undefined },
+    { title: 'Documents', icon: FileText, color: 'secretary', onClick: () => setActiveView('documents') },
     { title: 'Noticeboard', icon: Bell, color: 'secretary', onClick: () => setActiveView('noticeboard') },
     { title: 'Complaints', icon: MessageSquare, color: 'secretary', onClick: () => setActiveView('complaints') },
     { title: 'Emergency Contacts', icon: Phone, color: 'secretary', onClick: () => setActiveView('emergency') },
