@@ -64,6 +64,10 @@ export default {
         watchman: "hsl(var(--watchman))",
         secretary: "hsl(var(--secretary))",
         warning: "hsl(var(--warning))",
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

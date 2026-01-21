@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, Eye, EyeOff, Building2 } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Eye, EyeOff, Building2, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -96,12 +96,18 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+      {/* Background decorations */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secretary/5 rounded-full blur-3xl" />
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        className="w-full max-w-md relative z-10"
       >
         {/* Logo */}
         <div className="text-center mb-8">
@@ -109,7 +115,7 @@ export default function Auth() {
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-4"
+            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 mb-4"
           >
             <Building2 className="w-8 h-8 text-primary" />
           </motion.div>
@@ -121,7 +127,7 @@ export default function Auth() {
 
         {/* Form Card */}
         <div className="gradient-border">
-          <div className="bg-card rounded-lg p-8">
+          <div className="bg-card rounded-xl p-8">
             <form onSubmit={handleSubmit} className="space-y-5">
               <AnimatePresence mode="wait">
                 {isSignUp && (
@@ -131,7 +137,7 @@ export default function Auth() {
                     exit={{ opacity: 0, height: 0 }}
                     className="space-y-2"
                   >
-                    <Label htmlFor="fullName">Full Name</Label>
+                    <Label htmlFor="fullName" className="text-foreground">Full Name</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                       <Input
@@ -140,7 +146,7 @@ export default function Auth() {
                         placeholder="John Doe"
                         value={formData.fullName}
                         onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                        className="pl-10 bg-secondary border-border focus:border-primary"
+                        className="pl-10 bg-secondary/50 border-border focus:border-primary h-12"
                       />
                     </div>
                     {errors.fullName && (
@@ -151,7 +157,7 @@ export default function Auth() {
               </AnimatePresence>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-foreground">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
@@ -160,7 +166,7 @@ export default function Auth() {
                     placeholder="you@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="pl-10 bg-secondary border-border focus:border-primary"
+                    className="pl-10 bg-secondary/50 border-border focus:border-primary h-12"
                   />
                 </div>
                 {errors.email && (
@@ -169,7 +175,7 @@ export default function Auth() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-foreground">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
@@ -178,7 +184,7 @@ export default function Auth() {
                     placeholder="••••••••"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="pl-10 pr-10 bg-secondary border-border focus:border-primary"
+                    className="pl-10 pr-10 bg-secondary/50 border-border focus:border-primary h-12"
                   />
                   <button
                     type="button"
@@ -223,7 +229,7 @@ export default function Auth() {
                   setIsSignUp(!isSignUp);
                   setErrors({});
                 }}
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 {isSignUp ? (
                   <>Already have an account? <span className="text-primary font-medium">Sign in</span></>
@@ -234,6 +240,17 @@ export default function Auth() {
             </div>
           </div>
         </div>
+
+        {/* Security note */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-6 flex items-center justify-center gap-2 text-xs text-muted-foreground"
+        >
+          <Shield className="w-4 h-4" />
+          <span>Secure authentication powered by encrypted protocols</span>
+        </motion.div>
       </motion.div>
     </div>
   );
