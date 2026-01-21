@@ -6,15 +6,16 @@ import {
   Receipt, 
   FileText,
   Settings,
-  BarChart3,
   Calendar,
   Bell,
-  LogOut,
   MessageSquare,
   Phone,
-  ClipboardList
+  ClipboardList,
+  ArrowLeft,
+  Building2
 } from 'lucide-react';
 import { DashboardCard } from '@/components/DashboardCard';
+import { DashboardHeader } from '@/components/DashboardHeader';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,7 +24,11 @@ import PendingApproval from './PendingApproval';
 import Noticeboard from '@/components/Noticeboard';
 import { Complaints } from '@/components/Complaints';
 import { SocietyProvider } from '@/hooks/useSociety';
-import { NotificationBell } from '@/components/NotificationBell';
+import { Bills } from '@/components/Bills';
+import { Facilities } from '@/components/Facilities';
+import { EmergencyContacts } from '@/components/EmergencyContacts';
+import { Documents } from '@/components/Documents';
+import { GateLog } from '@/components/GateLog';
 
 interface Society {
   id: string;
@@ -34,12 +39,6 @@ interface Society {
   pincode: string;
   status: string;
 }
-
-import { Bills } from '@/components/Bills';
-import { Facilities } from '@/components/Facilities';
-import { EmergencyContacts } from '@/components/EmergencyContacts';
-import { Documents } from '@/components/Documents';
-import { GateLog } from '@/components/GateLog';
 
 type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'bills' | 'facilities' | 'emergency' | 'documents' | 'gatelog';
 
@@ -70,26 +69,43 @@ export default function SecretaryDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+          <div className="w-10 h-10 border-4 border-secretary/30 border-t-secretary rounded-full animate-spin" />
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
   }
 
-  // No society registered yet - show registration form
   if (!society) {
     return <RegisterSociety onRegistered={fetchSociety} />;
   }
 
-  // Society pending verification - show waiting screen
   if (society.status === 'pending_verification') {
     return <PendingApproval society={society} />;
   }
 
-  // Show noticeboard view
+  // View wrapper for sub-pages
+  const ViewWrapper = ({ children, title }: { children: React.ReactNode; title: string }) => (
+    <SocietyProvider initialSociety={society}>
+      <div className="min-h-screen p-6 md:p-8 bg-background">
+        <div className="max-w-4xl mx-auto">
+          <Button 
+            variant="ghost" 
+            onClick={() => setActiveView('dashboard')} 
+            className="mb-6 gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Dashboard
+          </Button>
+          <h2 className="text-2xl font-bold mb-6">{title}</h2>
+          {children}
+        </div>
+      </div>
+    </SocietyProvider>
+  );
+
   if (activeView === 'noticeboard') {
     return (
       <Noticeboard 
@@ -100,170 +116,175 @@ export default function SecretaryDashboard() {
     );
   }
 
-  // Show complaints view
   if (activeView === 'complaints') {
     return (
-      <SocietyProvider initialSociety={society}>
-        <div className="min-h-screen p-6 md:p-8">
-          <div className="max-w-4xl mx-auto">
-            <Button variant="ghost" onClick={() => setActiveView('dashboard')} className="mb-4">
-              ← Back to Dashboard
-            </Button>
-            <Complaints isSecretary={true} />
-          </div>
-        </div>
-      </SocietyProvider>
+      <ViewWrapper title="Complaints Management">
+        <Complaints isSecretary={true} />
+      </ViewWrapper>
     );
   }
 
-  // Show bills view
   if (activeView === 'bills') {
     return (
-      <SocietyProvider initialSociety={society}>
-        <div className="min-h-screen p-6 md:p-8">
-          <div className="max-w-4xl mx-auto">
-            <Button variant="ghost" onClick={() => setActiveView('dashboard')} className="mb-4">
-              ← Back to Dashboard
-            </Button>
-            <Bills isSecretary={true} societyId={society.id} />
-          </div>
-        </div>
-      </SocietyProvider>
+      <ViewWrapper title="Billing & Invoices">
+        <Bills isSecretary={true} societyId={society.id} />
+      </ViewWrapper>
     );
   }
 
-  // Show facilities view
   if (activeView === 'facilities') {
     return (
-      <SocietyProvider initialSociety={society}>
-        <div className="min-h-screen p-6 md:p-8">
-          <div className="max-w-4xl mx-auto">
-            <Button variant="ghost" onClick={() => setActiveView('dashboard')} className="mb-4">
-              ← Back to Dashboard
-            </Button>
-            <Facilities isSecretary={true} societyId={society.id} />
-          </div>
-        </div>
-      </SocietyProvider>
+      <ViewWrapper title="Facility Management">
+        <Facilities isSecretary={true} societyId={society.id} />
+      </ViewWrapper>
     );
   }
 
-  // Show emergency contacts view
   if (activeView === 'emergency') {
     return (
-      <SocietyProvider initialSociety={society}>
-        <div className="min-h-screen p-6 md:p-8">
-          <div className="max-w-4xl mx-auto">
-            <Button variant="ghost" onClick={() => setActiveView('dashboard')} className="mb-4">
-              ← Back to Dashboard
-            </Button>
-            <EmergencyContacts societyId={society.id} isSecretary={true} />
-          </div>
-        </div>
-      </SocietyProvider>
+      <ViewWrapper title="Emergency Contacts">
+        <EmergencyContacts societyId={society.id} isSecretary={true} />
+      </ViewWrapper>
     );
   }
 
-  // Show documents view
   if (activeView === 'documents') {
     return (
-      <SocietyProvider initialSociety={society}>
-        <div className="min-h-screen p-6 md:p-8">
-          <div className="max-w-4xl mx-auto">
-            <Button variant="ghost" onClick={() => setActiveView('dashboard')} className="mb-4">
-              ← Back to Dashboard
-            </Button>
-            <Documents societyId={society.id} isSecretary={true} />
-          </div>
-        </div>
-      </SocietyProvider>
+      <ViewWrapper title="Document Management">
+        <Documents societyId={society.id} isSecretary={true} />
+      </ViewWrapper>
     );
   }
 
-  // Show gate log view
   if (activeView === 'gatelog') {
     return (
-      <SocietyProvider initialSociety={society}>
-        <div className="min-h-screen p-6 md:p-8">
-          <div className="max-w-4xl mx-auto">
-            <Button variant="ghost" onClick={() => setActiveView('dashboard')} className="mb-4">
-              ← Back to Dashboard
-            </Button>
-            <GateLog isSecretary={true} />
-          </div>
-        </div>
-      </SocietyProvider>
+      <ViewWrapper title="Gate Log">
+        <GateLog isSecretary={true} />
+      </ViewWrapper>
     );
   }
 
+  // Secretary-specific features (management-focused)
   const features = [
-    { title: 'Overview', icon: LayoutDashboard, color: 'secretary', onClick: undefined },
-    { title: 'Manage Residents', icon: Users, color: 'secretary', onClick: undefined },
-    { title: 'Billing & Invoices', icon: Receipt, color: 'secretary', onClick: () => setActiveView('bills') },
-    { title: 'Facilities', icon: Calendar, color: 'secretary', onClick: () => setActiveView('facilities') },
-    { title: 'Gate Log', icon: ClipboardList, color: 'secretary', onClick: () => setActiveView('gatelog') },
-    { title: 'Documents', icon: FileText, color: 'secretary', onClick: () => setActiveView('documents') },
-    { title: 'Noticeboard', icon: Bell, color: 'secretary', onClick: () => setActiveView('noticeboard') },
-    { title: 'Complaints', icon: MessageSquare, color: 'secretary', onClick: () => setActiveView('complaints') },
-    { title: 'Emergency Contacts', icon: Phone, color: 'secretary', onClick: () => setActiveView('emergency') },
-    { title: 'Settings', icon: Settings, color: 'secretary', onClick: undefined },
+    { 
+      title: 'Overview', 
+      description: 'Society dashboard',
+      icon: LayoutDashboard, 
+      onClick: undefined,
+      disabled: true 
+    },
+    { 
+      title: 'Residents', 
+      description: 'Manage members',
+      icon: Users, 
+      onClick: undefined,
+      disabled: true 
+    },
+    { 
+      title: 'Billing', 
+      description: 'Create & track bills',
+      icon: Receipt, 
+      onClick: () => setActiveView('bills') 
+    },
+    { 
+      title: 'Facilities', 
+      description: 'Manage amenities',
+      icon: Calendar, 
+      onClick: () => setActiveView('facilities') 
+    },
+    { 
+      title: 'Gate Log', 
+      description: 'View visitor records',
+      icon: ClipboardList, 
+      onClick: () => setActiveView('gatelog') 
+    },
+    { 
+      title: 'Documents', 
+      description: 'Upload & manage docs',
+      icon: FileText, 
+      onClick: () => setActiveView('documents') 
+    },
+    { 
+      title: 'Noticeboard', 
+      description: 'Post announcements',
+      icon: Bell, 
+      onClick: () => setActiveView('noticeboard') 
+    },
+    { 
+      title: 'Complaints', 
+      description: 'Resolve issues',
+      icon: MessageSquare, 
+      onClick: () => setActiveView('complaints') 
+    },
+    { 
+      title: 'Emergency', 
+      description: 'Manage contacts',
+      icon: Phone, 
+      onClick: () => setActiveView('emergency') 
+    },
+    { 
+      title: 'Settings', 
+      description: 'Society settings',
+      icon: Settings, 
+      onClick: undefined,
+      disabled: true 
+    },
   ];
 
-  // Society approved - show dashboard
   return (
-    <div className="min-h-screen p-6 md:p-8">
+    <div className="min-h-screen p-6 md:p-8 bg-background">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10"
-        >
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold">
-              <span className="text-secretary">{society.name}</span>
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              {user?.email}
-            </p>
-          </div>
-          <div className="flex items-center gap-2 self-start">
-            <NotificationBell />
-            <Button
-              variant="outline"
-              onClick={signOut}
-              className="flex items-center gap-2"
-            >
-              <LogOut className="w-4 h-4" />
-              Sign Out
-            </Button>
-          </div>
-        </motion.div>
+        <DashboardHeader
+          title={society.name}
+          subtitle={user?.email}
+          role="secretary"
+          onSignOut={signOut}
+        />
 
-        {/* Role Badge */}
+        {/* Society Info Card */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secretary/10 border border-secretary/30 mb-8"
+          className="mb-8"
         >
-          <div className="w-2 h-2 rounded-full bg-secretary animate-pulse" />
-          <span className="text-sm font-medium text-secretary">Secretary</span>
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-card border border-border">
+            <div className="w-10 h-10 rounded-lg bg-secretary/10 flex items-center justify-center shrink-0">
+              <Building2 className="w-5 h-5 text-secretary" />
+            </div>
+            <div className="text-left min-w-0">
+              <p className="text-sm text-muted-foreground truncate">
+                {society.address}
+              </p>
+              <p className="text-sm text-muted-foreground truncate">
+                {society.city}, {society.state} - {society.pincode}
+              </p>
+            </div>
+          </div>
         </motion.div>
 
         {/* Feature Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {features.map((feature, index) => (
-            <DashboardCard
-              key={feature.title}
-              title={feature.title}
-              icon={feature.icon}
-              color={feature.color}
-              index={index}
-              onClick={feature.onClick}
-            />
-          ))}
-        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <h2 className="text-lg font-semibold mb-4 text-foreground">Management Tools</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {features.map((feature, index) => (
+              <DashboardCard
+                key={feature.title}
+                title={feature.title}
+                description={feature.description}
+                icon={feature.icon}
+                color="secretary"
+                index={index}
+                onClick={feature.onClick}
+                disabled={feature.disabled}
+              />
+            ))}
+          </div>
+        </motion.div>
       </div>
     </div>
   );
