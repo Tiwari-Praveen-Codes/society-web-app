@@ -64,7 +64,12 @@ export function DashboardCard({
       onClick={onClick}
       disabled={disabled}
       className={cn(
+        // Base styles with improved touch targets
         "group relative p-5 rounded-xl bg-card border border-border transition-all duration-300 text-left w-full",
+        // Minimum touch target size (48x48px recommended by WCAG)
+        "min-h-[72px]",
+        // Touch optimization
+        "touch-manipulation active:scale-[0.98]",
         variant.border,
         variant.glow,
         disabled && "opacity-50 cursor-not-allowed",
@@ -73,14 +78,15 @@ export function DashboardCard({
     >
       <div className="flex items-start gap-4">
         <div className={cn(
-          "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300",
+          // Larger icon container for better touch
+          "w-12 h-12 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300",
           variant.bg,
-          !disabled && "group-hover:scale-110"
+          !disabled && "group-hover:scale-110 group-active:scale-95"
         )}>
           <Icon className={cn("w-6 h-6", variant.icon)} />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+          <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate text-base">
             {title}
           </h3>
           {description && (

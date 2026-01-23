@@ -16,6 +16,8 @@ import { DashboardCard } from '@/components/DashboardCard';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { SocietySelector } from '@/components/SocietySelector';
 import { Button } from '@/components/ui/button';
+import { MobileBottomNav, MobileNavView } from '@/components/MobileBottomNav';
+import { MobileMoreMenu } from '@/components/MobileMoreMenu';
 import { useAuth } from '@/hooks/useAuth';
 import { useSociety } from '@/hooks/useSociety';
 import Noticeboard from '@/components/Noticeboard';
@@ -34,6 +36,7 @@ export default function ResidentDashboard() {
   const { societies, selectedSociety, loading, clearSociety } = useSociety();
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState<ActiveView>('dashboard');
+  const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && societies.length > 0 && !selectedSociety) {
@@ -44,6 +47,15 @@ export default function ResidentDashboard() {
   const handleChangeSociety = () => {
     clearSociety();
     navigate('/select-society');
+  };
+
+  const handleMobileNav = (view: MobileNavView) => {
+    if (view === 'more') {
+      setIsMoreMenuOpen(true);
+    } else {
+      setActiveView(view as ActiveView);
+      setIsMoreMenuOpen(false);
+    }
   };
 
   if (loading) {
@@ -82,19 +94,19 @@ export default function ResidentDashboard() {
     );
   }
 
-  // View wrapper for sub-pages
+  // View wrapper for sub-pages with mobile-friendly back button
   const ViewWrapper = ({ children, title }: { children: React.ReactNode; title: string }) => (
-    <div className="min-h-screen p-6 md:p-8 bg-background">
+    <div className="mobile-safe-height p-4 md:p-8 pb-24 md:pb-8 bg-background">
       <div className="max-w-4xl mx-auto">
         <Button 
           variant="ghost" 
           onClick={() => setActiveView('dashboard')} 
-          className="mb-6 gap-2 text-muted-foreground hover:text-foreground"
+          className="mb-4 md:mb-6 gap-2 text-muted-foreground hover:text-foreground min-h-[44px] touch-manipulation"
         >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Dashboard
+          <ArrowLeft className="w-5 h-5" />
+          <span className="text-base">Back</span>
         </Button>
-        <h2 className="text-2xl font-bold mb-6">{title}</h2>
+        <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">{title}</h2>
         {children}
       </div>
     </div>
@@ -102,63 +114,126 @@ export default function ResidentDashboard() {
 
   if (activeView === 'noticeboard' && selectedSociety) {
     return (
-      <Noticeboard 
-        societyId={selectedSociety.id} 
-        isSecretary={false}
-        onBack={() => setActiveView('dashboard')}
-      />
+      <>
+        <Noticeboard 
+          societyId={selectedSociety.id} 
+          isSecretary={false}
+          onBack={() => setActiveView('dashboard')}
+        />
+        <MobileBottomNav activeView={activeView} onNavigate={handleMobileNav} />
+        <MobileMoreMenu 
+          isOpen={isMoreMenuOpen} 
+          onClose={() => setIsMoreMenuOpen(false)}
+          onNavigate={(view) => setActiveView(view as ActiveView)}
+          onSignOut={signOut}
+        />
+      </>
     );
   }
 
   if (activeView === 'complaints' && selectedSociety) {
     return (
-      <ViewWrapper title="Complaints">
-        <Complaints isSecretary={false} />
-      </ViewWrapper>
+      <>
+        <ViewWrapper title="Complaints">
+          <Complaints isSecretary={false} />
+        </ViewWrapper>
+        <MobileBottomNav activeView={activeView} onNavigate={handleMobileNav} />
+        <MobileMoreMenu 
+          isOpen={isMoreMenuOpen} 
+          onClose={() => setIsMoreMenuOpen(false)}
+          onNavigate={(view) => setActiveView(view as ActiveView)}
+          onSignOut={signOut}
+        />
+      </>
     );
   }
 
   if (activeView === 'bills' && selectedSociety) {
     return (
-      <ViewWrapper title="Bills & Payments">
-        <Bills isSecretary={false} />
-      </ViewWrapper>
+      <>
+        <ViewWrapper title="Bills & Payments">
+          <Bills isSecretary={false} />
+        </ViewWrapper>
+        <MobileBottomNav activeView={activeView} onNavigate={handleMobileNav} />
+        <MobileMoreMenu 
+          isOpen={isMoreMenuOpen} 
+          onClose={() => setIsMoreMenuOpen(false)}
+          onNavigate={(view) => setActiveView(view as ActiveView)}
+          onSignOut={signOut}
+        />
+      </>
     );
   }
 
   if (activeView === 'facilities' && selectedSociety) {
     return (
-      <ViewWrapper title="Facility Booking">
-        <Facilities isSecretary={false} societyId={selectedSociety.id} />
-      </ViewWrapper>
+      <>
+        <ViewWrapper title="Facility Booking">
+          <Facilities isSecretary={false} societyId={selectedSociety.id} />
+        </ViewWrapper>
+        <MobileBottomNav activeView={activeView} onNavigate={handleMobileNav} />
+        <MobileMoreMenu 
+          isOpen={isMoreMenuOpen} 
+          onClose={() => setIsMoreMenuOpen(false)}
+          onNavigate={(view) => setActiveView(view as ActiveView)}
+          onSignOut={signOut}
+        />
+      </>
     );
   }
 
   if (activeView === 'visitors' && selectedSociety) {
     return (
-      <ViewWrapper title="Visitor Management">
-        <VisitorEntry isWatchman={false} />
-      </ViewWrapper>
+      <>
+        <ViewWrapper title="Visitor Management">
+          <VisitorEntry isWatchman={false} />
+        </ViewWrapper>
+        <MobileBottomNav activeView={activeView} onNavigate={handleMobileNav} />
+        <MobileMoreMenu 
+          isOpen={isMoreMenuOpen} 
+          onClose={() => setIsMoreMenuOpen(false)}
+          onNavigate={(view) => setActiveView(view as ActiveView)}
+          onSignOut={signOut}
+        />
+      </>
     );
   }
 
   if (activeView === 'emergency' && selectedSociety) {
     return (
-      <ViewWrapper title="Emergency Contacts">
-        <EmergencyContacts societyId={selectedSociety.id} isSecretary={false} />
-      </ViewWrapper>
+      <>
+        <ViewWrapper title="Emergency Contacts">
+          <EmergencyContacts societyId={selectedSociety.id} isSecretary={false} />
+        </ViewWrapper>
+        <MobileBottomNav activeView={activeView} onNavigate={handleMobileNav} />
+        <MobileMoreMenu 
+          isOpen={isMoreMenuOpen} 
+          onClose={() => setIsMoreMenuOpen(false)}
+          onNavigate={(view) => setActiveView(view as ActiveView)}
+          onSignOut={signOut}
+        />
+      </>
     );
   }
 
   if (activeView === 'documents' && selectedSociety) {
     return (
-      <ViewWrapper title="Documents">
-        <Documents societyId={selectedSociety.id} isSecretary={false} />
-      </ViewWrapper>
+      <>
+        <ViewWrapper title="Documents">
+          <Documents societyId={selectedSociety.id} isSecretary={false} />
+        </ViewWrapper>
+        <MobileBottomNav activeView={activeView} onNavigate={handleMobileNav} />
+        <MobileMoreMenu 
+          isOpen={isMoreMenuOpen} 
+          onClose={() => setIsMoreMenuOpen(false)}
+          onNavigate={(view) => setActiveView(view as ActiveView)}
+          onSignOut={signOut}
+        />
+      </>
     );
   }
 
-  // Resident-specific features
+  // Resident-specific features for desktop grid
   const features = [
     { 
       title: 'Noticeboard', 
@@ -205,58 +280,71 @@ export default function ResidentDashboard() {
   ];
 
   return (
-    <div className="min-h-screen p-6 md:p-8 bg-background">
-      <div className="max-w-6xl mx-auto">
-        <DashboardHeader
-          title="Welcome back!"
-          subtitle={user?.email}
-          role="resident"
-          onSignOut={signOut}
-        />
-
-        {selectedSociety && (
-          <SocietySelector
-            society={selectedSociety}
-            canChange={societies.length > 1}
-            onChangeSociety={handleChangeSociety}
-            color="primary"
+    <>
+      <div className="mobile-safe-height p-4 md:p-8 pb-24 md:pb-8 bg-background">
+        <div className="max-w-6xl mx-auto">
+          <DashboardHeader
+            title="Welcome back!"
+            subtitle={user?.email}
+            role="resident"
+            onSignOut={signOut}
           />
-        )}
 
-        {/* Availability Status */}
-        {selectedSociety && (
+          {selectedSociety && (
+            <SocietySelector
+              society={selectedSociety}
+              canChange={societies.length > 1}
+              onChangeSociety={handleChangeSociety}
+              color="primary"
+            />
+          )}
+
+          {/* Availability Status */}
+          {selectedSociety && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="mb-6 md:mb-8"
+            >
+              <AvailabilityStatus societyId={selectedSociety.id} />
+            </motion.div>
+          )}
+
+          {/* Feature Grid */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mb-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
           >
-            <AvailabilityStatus societyId={selectedSociety.id} />
+            <h2 className="text-lg font-semibold mb-4 text-foreground">Quick Actions</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+              {features.map((feature, index) => (
+                <DashboardCard
+                  key={feature.title}
+                  title={feature.title}
+                  description={feature.description}
+                  icon={feature.icon}
+                  color="resident"
+                  index={index}
+                  onClick={feature.onClick}
+                />
+              ))}
+            </div>
           </motion.div>
-        )}
-
-        {/* Feature Grid */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-        >
-          <h2 className="text-lg font-semibold mb-4 text-foreground">Quick Actions</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {features.map((feature, index) => (
-              <DashboardCard
-                key={feature.title}
-                title={feature.title}
-                description={feature.description}
-                icon={feature.icon}
-                color="resident"
-                index={index}
-                onClick={feature.onClick}
-              />
-            ))}
-          </div>
-        </motion.div>
+        </div>
       </div>
-    </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav activeView={activeView} onNavigate={handleMobileNav} />
+      
+      {/* Mobile More Menu */}
+      <MobileMoreMenu 
+        isOpen={isMoreMenuOpen} 
+        onClose={() => setIsMoreMenuOpen(false)}
+        onNavigate={(view) => setActiveView(view as ActiveView)}
+        onSignOut={signOut}
+      />
+    </>
   );
 }
