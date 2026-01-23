@@ -51,11 +51,11 @@ export function DashboardHeader({
     <motion.header
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8"
+      className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 md:gap-4 mb-6 md:mb-8"
     >
       <div className="space-y-1">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+          <h1 className="text-xl md:text-3xl font-bold text-foreground">
             {title}
           </h1>
           <Badge 
@@ -70,7 +70,7 @@ export function DashboardHeader({
           </Badge>
         </div>
         {subtitle && (
-          <p className="text-sm text-muted-foreground">{subtitle}</p>
+          <p className="text-sm text-muted-foreground truncate max-w-[200px] sm:max-w-none">{subtitle}</p>
         )}
       </div>
       
@@ -93,20 +93,21 @@ export function DashboardHeader({
           variant="ghost"
           size="icon"
           onClick={() => navigate('/profile')}
-          className="text-muted-foreground hover:text-foreground"
+          className="text-muted-foreground hover:text-foreground min-w-[44px] min-h-[44px] touch-manipulation"
           title="Profile Settings"
         >
           <Settings className="w-5 h-5" />
         </Button>
         
+        {/* Hide sign out on mobile - it's in the More menu */}
         <Button
           variant="outline"
           size="sm"
           onClick={onSignOut}
-          className="gap-2"
+          className="gap-2 hidden md:flex min-h-[44px] touch-manipulation"
         >
           <LogOut className="w-4 h-4" />
-          <span className="hidden sm:inline">Sign Out</span>
+          <span>Sign Out</span>
         </Button>
       </div>
     </motion.header>

@@ -145,4 +145,21 @@
     0%, 100% { box-shadow: 0 0 20px hsl(173 80% 40% / 0.3); }
     50% { box-shadow: 0 0 40px hsl(173 80% 40% / 0.5); }
   }
+
+  /* Safe area for mobile bottom navigation */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  /* Mobile viewport fix for 100vh */
+  .mobile-safe-height {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Touch-friendly scrolling */
+  .touch-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
 }
