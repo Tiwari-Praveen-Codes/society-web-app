@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { LogOut } from 'lucide-react';
+import { LogOut, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { NotificationBell } from '@/components/NotificationBell';
 import { Badge } from '@/components/ui/badge';
@@ -44,6 +45,7 @@ export function DashboardHeader({
   showNotifications = true 
 }: DashboardHeaderProps) {
   const config = roleConfig[role];
+  const navigate = useNavigate();
 
   return (
     <motion.header
@@ -86,6 +88,17 @@ export function DashboardHeader({
         </Badge>
         
         {showNotifications && <NotificationBell />}
+        
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate('/profile')}
+          className="text-muted-foreground hover:text-foreground"
+          title="Profile Settings"
+        >
+          <Settings className="w-5 h-5" />
+        </Button>
+        
         <Button
           variant="outline"
           size="sm"
