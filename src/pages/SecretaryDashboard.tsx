@@ -12,7 +12,8 @@ import {
   Phone,
   ClipboardList,
   ArrowLeft,
-  Building2
+  Building2,
+  BarChart3
 } from 'lucide-react';
 import { DashboardCard } from '@/components/DashboardCard';
 import { DashboardHeader } from '@/components/DashboardHeader';
@@ -29,7 +30,7 @@ import { Facilities } from '@/components/Facilities';
 import { EmergencyContacts } from '@/components/EmergencyContacts';
 import { Documents } from '@/components/Documents';
 import { GateLog } from '@/components/GateLog';
-
+import { AnalyticsDashboard } from '@/components/AnalyticsDashboard';
 interface Society {
   id: string;
   name: string;
@@ -40,7 +41,7 @@ interface Society {
   status: string;
 }
 
-type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'bills' | 'facilities' | 'emergency' | 'documents' | 'gatelog';
+type ActiveView = 'dashboard' | 'noticeboard' | 'complaints' | 'bills' | 'facilities' | 'emergency' | 'documents' | 'gatelog' | 'analytics';
 
 export default function SecretaryDashboard() {
   const { signOut, user } = useAuth();
@@ -164,14 +165,21 @@ export default function SecretaryDashboard() {
     );
   }
 
+  if (activeView === 'analytics') {
+    return (
+      <ViewWrapper title="Analytics Dashboard">
+        <AnalyticsDashboard societyId={society.id} />
+      </ViewWrapper>
+    );
+  }
+
   // Secretary-specific features (management-focused)
   const features = [
     { 
-      title: 'Overview', 
-      description: 'Society dashboard',
-      icon: LayoutDashboard, 
-      onClick: undefined,
-      disabled: true 
+      title: 'Analytics', 
+      description: 'View insights & reports',
+      icon: BarChart3, 
+      onClick: () => setActiveView('analytics')
     },
     { 
       title: 'Residents', 
