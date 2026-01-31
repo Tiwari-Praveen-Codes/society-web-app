@@ -11,6 +11,7 @@ import Auth from "./pages/Auth";
 import SelectRole from "./pages/SelectRole";
 import SelectSociety from "./pages/SelectSociety";
 import ProfileSettings from "./pages/ProfileSettings";
+import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/select-role" element={<SelectRole />} />
               <Route path="/select-society" element={<SelectSociety />} />
               <Route path="/profile" element={<ProfileSettings />} />
+              <Route path="/install" element={<Install />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
